@@ -3,7 +3,7 @@
 ;; Copyright 2007, 2008, 2009, 2010 Kevin Ryde
 
 ;; Author: Kevin Ryde <user42@zip.com.au>
-;; Version: 7
+;; Version: 8
 ;; Keywords: files
 ;; URL: http://user42.tuxfamily.org/ffap-rfc-directories/index.html
 ;; EmacsWiki: FindFileAtPoint
@@ -72,6 +72,7 @@
 ;; Version 5 - eval-when-compile for smaller .elc on emacs23
 ;; Version 6 - defcustom same as emacs23
 ;; Version 7 - undo defadvice on unload-feature
+;; Version 8 - allow for advice unloaded before us too
 
 ;;; Code:
 
@@ -103,6 +104,9 @@ is offered."
 
   (add-hook 'ffap-rfc-directories-unload-hook
             (lambda ()
+              ;; ad-find-advice not autoloaded, require 'advice it in
+              ;; case it was removed by `unload-feature'
+              (require 'advice)
               (when (ad-find-advice 'ffap-rfc 'around 'ffap-rfc-directories)
                 (ad-remove-advice   'ffap-rfc 'around 'ffap-rfc-directories)
                 (ad-activate        'ffap-rfc)))))
